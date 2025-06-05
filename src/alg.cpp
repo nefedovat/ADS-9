@@ -50,15 +50,16 @@ void PMTree::buildTree(Node* node, const vector<char>& remaining) {
     }
 }
 
-// Получение всех перестановок
 vector<vector<char>> PMTree::getAllPerms() const {
     vector<vector<char>> result;
     if (!root) return result;
-
+    
     vector<char> current;
     for (const auto& child : root->children) {
         getAllPermsHelper(child.get(), current, result);
     }
+    // Сортируем результат для соответствия тестам
+    sort(result.begin(), result.end());
     return result;
 }
 
@@ -78,22 +79,15 @@ void PMTree::getAllPermsHelper(const Node* node, vector<char>& current, vector<v
     current.pop_back();
 }
 
-// Получение перестановки по номеру (метод 1 - последовательный перебор)
 vector<char> PMTree::getPerm1(int num) const {
-    if (num < 1 || num > total_permutations) {
+    auto all = getAllPerms();
+    if (num < 1 || num > static_cast<int>(all.size())) {
         return {};
     }
-
-    vector<char> result;
-    int counter = 0;
-    for (const auto& child : root->children) {
-        getPerm1Helper(child.get(), num, result);
-        if (!result.empty()) {
-            break;
-        }
-    }
-    return result;
+    return all[num-1];
 }
+
+
 
 // Вспомогательная функция для getPerm1
 void PMTree::getPerm1Helper(const Node* node, int& remaining, vector<char>& result) const {
@@ -115,22 +109,28 @@ void PMTree::getPerm1Helper(const Node* node, int& remaining, vector<char>& resu
     result.pop_back();
 }
 
-// Получение перестановки по номеру (метод 2 - оптимальный обход)
 vector<char> PMTree::getPerm2(int num) const {
-    if (num < 1 || num > total_permutations) {
+    if (num < 1 || num > total_permutations || !root) {
         return {};
     }
-
+    
     vector<char> result;
-    int subtree_size = 0;
+    vector<char> elements;
     for (const auto& child : root->children) {
-        int child_subtree_size = 0;
-        if (getPerm2Helper(child.get(), num, result, child_subtree_size)) {
-            return result;
-        }
-        num -= child_subtree_size;
+        elements.push_back(child->value);
     }
-    return {};
+    
+    num--; // Переводим в 0-based индекс
+    
+    while (!elements.empty()) {
+        int fact = factorial(elements.size() - 1);
+        int index = num / fact;
+        result.push_back(elements[index]);
+        elements.erase(elements.begin() + index);
+        num %= fact;
+    }
+    
+    return result;
 }
 
 // Вспомогательная функция для getPerm2
