@@ -23,7 +23,7 @@ public:
 private:
     std::unique_ptr<Node> root;
     int total_permutations;
-
+    int factorial(int n) const;  // Добавляем эту строку
     void buildTree(Node* node, const std::vector<char>& remaining);
     void getAllPermsHelper(const Node* node, std::vector<char>& current, std::vector<std::vector<char>>& result) const;
     void getPerm1Helper(const Node* node, int& remaining, std::vector<char>& result) const;
