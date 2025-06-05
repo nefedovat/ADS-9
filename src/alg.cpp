@@ -9,6 +9,15 @@
 
 using namespace std;
 
+// Добавляем реализацию factorial
+int PMTree::factorial(int n) const {
+    int result = 1;
+    for (int i = 2; i <= n; ++i) {
+        result *= i;
+    }
+    return result;
+}
+
 // Конструктор дерева
 PMTree::PMTree(const vector<char>& elements) {
     if (elements.empty()) {
